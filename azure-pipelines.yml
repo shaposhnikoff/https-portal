@@ -1,0 +1,87 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- master
+
+pool:
+  vmImage: 'Ubuntu-16.04'
+
+steps:
+- script: echo Hello, world!
+  displayName: 'Run a one-line script'
+
+- script: |
+    echo Add other tasks to build, test, and deploy your project.
+    echo See https://aka.ms/yaml
+  displayName: 'Run a multi-line script'
+
+
+pool:
+
+  name: Hosted Ubuntu 1604
+
+steps:
+
+- task: Docker@0
+
+  displayName: 'build Ubuntu Zabbix mysql server'
+
+  inputs:
+
+    dockerFile: 'server-mysql/ubuntu/Dockerfile'
+
+
+
+- task: Docker@0
+
+  displayName: 'build Ubuntu Web Apache Mysql Zabbix'
+
+  inputs:
+
+    dockerFile: 'web-apache-mysql/ubuntu/Dockerfile'
+
+
+
+- task: Docker@0
+
+  displayName: 'build Ubuntu Web Nginx Mysql Zabbix'
+
+  inputs:
+
+    dockerFile: 'web-nginx-mysql/ubuntu/Dockerfile'
+
+
+
+- task: Docker@0
+
+  displayName: 'Push an image Ubuntu Zabbix mysql'
+
+  inputs:
+
+    containerregistrytype: 'Container Registry'
+
+    dockerRegistryConnection: hub.docker.com
+
+    action: 'Push an image'
+
+
+
+- task: Docker@2
+
+  displayName: 'Build Ubuntu Zabbix agent'
+
+  inputs:
+
+    containerRegistry: hub.docker.com
+
+    command: build
+
+    Dockerfile: agent/ubuntu/Dockerfile
+
+    tags: '$(Build.Repository.Name):$(Build.BuildId)'
+
+
+
